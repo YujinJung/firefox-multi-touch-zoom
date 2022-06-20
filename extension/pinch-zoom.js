@@ -80,16 +80,16 @@ browser.storage.local.get([
 // browser-hint optimization - I found this causes issues with some sites like maps.google.com
 // pageElement.style.willChange = 'transform';
 
-// we track the state of the ctrl key in order to distinguish mouse-wheel events from pinch gestures
-let realCtrlDown = false;
-let updateRealCtrl = (e) => realCtrlDown = e.ctrlKey;
-window.addEventListener(`keydown`, updateRealCtrl);
-window.addEventListener(`keyup`, updateRealCtrl);
-window.addEventListener(`mousemove`, updateRealCtrl);
+// we track the state of the shift key in order to distinguish mouse-wheel events from pinch gestures
+let realShiftDown = false;
+let updateRealShift = (e) => realShiftDown = e.shiftKey;
+window.addEventListener('keydown', updateRealShift);
+window.addEventListener('keyup', updateRealShift);
+window.addEventListener('mousemove', updateRealShift);
 
-// cmd + 0 or ctrl + 0 to restore zoom
+// shift + 0 to restore zoom
 window.addEventListener('keydown', (e) => {
-	if (e.key == '0' && (isMac ? e.metaKey : e.ctrlKey)) {
+	if (e.key == ')') {
 		resetScale();
 	}
 });
@@ -154,7 +154,7 @@ touchEventElement.addEventListener(`touchend`, (e) => {
 	touchLastCentreDistance = 0; //prevents the page from jumping around when fingers are added or removed
 	if(e.touches.length < 2){
 		// high quality render when zooming finished
-		pageElement.style.setProperty('transform', `scaleX(${pageScale}) scaleY(${pageScale})`, 'important');
+		pageElement.style.setProperty('transform', `scale(${pageScale})`, 'important');
 		restoreControl(); // restore scrollbars
 	}
 });
@@ -171,7 +171,7 @@ wheelEventElement.addEventListener(`wheel`, (e) => {
 	// when pinching, Firefox will set the 'ctrlKey' flag to true, even when ctrl is not pressed
 	// we can use this fact to distinguish between scrolling and pinching
 	// ! it turns out this is only the case on macOS - on Windows, a ctrl key down event seems to be fired right before the wheel event...
-	let firefoxPseudoPinch = e.ctrlKey && (isMac ? !realCtrlDown : true);
+	let firefoxPseudoPinch = e.shiftKey && (isMac ? !realShiftDown : true);
 	if (firefoxPseudoPinch || (e.shiftKey && shiftKeyZoom)) {
 		if (e.defaultPrevented) return;
 
@@ -241,7 +241,7 @@ function updateTransform(scaleModeOverride, shouldDisableControl, touch) {
 
 	if (sm === 0 || alwaysHighQuality) {
 		// scaleX/scaleY
-		pageElement.style.setProperty('transform', `scaleX(${pageScale}) scaleY(${pageScale})`, 'important');
+		pageElement.style.setProperty('transform', `scale(${pageScale})`, 'important');
 	} else {
 		// perspective (reduced quality but faster)
 		let p = 1; // what's the best value here?
@@ -255,7 +255,7 @@ function updateTransform(scaleModeOverride, shouldDisableControl, touch) {
 		if(touch != true){ //prevents this from occuring when using touchscreen
 			window.clearTimeout(qualityTimeoutHandle);
 			qualityTimeoutHandle = setTimeout(function(){
-				pageElement.style.setProperty('transform', `scaleX(${pageScale}) scaleY(${pageScale})`, 'important');
+				pageElement.style.setProperty('transform', `scale(${pageScale})`, 'important');
 			}, highQualityWait_ms);
 		}
 	}

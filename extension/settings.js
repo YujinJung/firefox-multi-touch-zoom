@@ -20,7 +20,7 @@ document.getElementById('mtzoom_shiftkey').addEventListener('change', function (
 });
 
 document.getElementById('mtzoom_speed').addEventListener('change', function (event) {
-  storageArea.set({ "mtzoom_speed": parseFloat(event.target.value) });
+  storageArea.set({ "mtzoom_speed": parseFloat(event.target.value) / 100.0 });
 });
 
 document.getElementById('mtzoom_disableScrollbarsWhenZooming').addEventListener('change', function (event) {
